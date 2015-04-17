@@ -1,2 +1,5 @@
 # ModelingSocialDataProject
-Group Project for APMA 4990 Modeling Social Data 
+=================
+
+This repository contains a group project that cleans, explores, and analyzes Yelp dataset as part of the Yelp Dataset Challenge.
+
