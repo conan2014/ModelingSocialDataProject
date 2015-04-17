@@ -1,0 +1,5 @@
+NYC Open Data:
+https://nycopendata.socrata.com/
+
+NYC Data Visualization:
+http://www.socrata.com/blog/data-visualization-gothamists-best-maps-2013/
