@@ -1,9 +1,12 @@
 library(readr)
 library(dplyr)
 library(ggplot2)
+library(Matrix)
+library(readr)
 
 # sample_n(user,nrow(user)*.1)
 
+setwd("C:/Users/Jeff.Bernard/Data/Yelp/yelp_dataset_challenge_academic_dataset/")
 user <- read_csv("yelp_academic_dataset_user.csv")
 user$num_friends <- sapply(1:nrow(user), function(x) length(strsplit(user$friends[x],',')[[1]]))
 ggplot(user,aes(x=log10(fans),y=average_stars,alpha=review_count)) + 
@@ -30,15 +33,6 @@ ggplot(user,
   guides(color=guide_legend(title="Reviewed\nNightlife\nEstablishment"))
 
 
-
-rm(list=ls())
-setwd("C:/Users/Jeff.Bernard/Data/Yelp/yelp_dataset_challenge_academic_dataset/")
-
-reviews <- read_csv("no_text_reviews.csv")
-reviews$business_id %<>% as.factor
-reviews$user_id %<>% as.factor
-
-
 user$avg.cool <- user$votes.cool/user$review_count
 user$avg.funny <- user$votes.funny/user$review_count
 user$avg.useful <- user$votes.useful/user$review_count
@@ -48,7 +42,10 @@ user$perc.cool <- user$votes.cool/user$total.votes
 user$perc.funny <- user$votes.funny/user$total.votes
 user$perc.useful <- user$votes.useful/user$total.votes
 
+library(readr)
 business <- read_csv("yelp_academic_dataset_business.csv")
+restaurants <- business[grep("Restaurant",business$categories),]
+
 
 users_who_rated <- function(category){
   biz_in_cat <- business$business_id[grep(category,business$categories)]
