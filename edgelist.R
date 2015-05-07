@@ -53,5 +53,13 @@ edgelist_2$node <- c(na.start:na.end)
 edgelist_2$edge <- edgelist_2$friend
 # combine divided network into whole
 edgelist <- rbind(edgelist_1,edgelist_2)
+# save edgelist as a csv
+write.csv(edgelist, "yelp_academic_edgelist.csv", row.names=FALSE)
 
-write.csv(edgelist, "yelp_academic_edgelist1.csv", row.names=FALSE)
+# create conversion key as a dataframe for all nodes
+key_1 <- as.data.frame(cbind(edgelevels,c(1:length(edgelevels))),stringsAsFactors=FALSE)
+colnames(key_1) <- c("user_id","node")
+key_2 <- edgelist_2[,c("user_id","node")]
+key <- rbind(key_1,key_2)
+# save key as a csv
+write.csv(key, "edgelist_node_key.csv", row.names=FALSE)
