@@ -33,11 +33,12 @@ adj.yelp <- Matrix(get.adjacency(graph.yelp),sparse=TRUE)
 
 # compute the 2nd degee adjacency matrix
 d2 <- adj.yelp %*% adj.yelp # d2 contains 2-walks
-names <- dimnames(d2)[1]
 diag(d2) <- 0     # take out loops
-d2[d2!=0] <- 1    # transform to remove multiplicity of walks
-D2 <- d2 # remove 1st degree connections
-D2[adj.yelp==1] <- 0
+names <- dimnames(d2)[1]
+
+D2 <- d2
+D2[D2!=0] <- 1       # transform to remove multiplicity of walks
+D2[adj.yelp==1] <- 0 # remove 1st degree connections
 D2[D2<0] <- 0 # remove negative values created by above
 
 # calculate reach of 2nd degree
