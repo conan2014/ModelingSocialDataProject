@@ -106,6 +106,85 @@ rmse11 <- (test$stars - test$pred11)^2 %>% na.omit %>% mean %>% sqrt
 
 ##### or network measures
 
+netdeg <- read.csv("C:/Users/Jeff.Bernard/Dropbox/QMSS/gitpages/ModelingSocialDataProject/yelp_network_degree.csv")
+actAZnetdeg <- netdeg[netdeg$user_id %in% userlist,]
+friendless_users <- userlist[!(userlist %in% actAZnetdeg$user_id)] 
+azlist <-
+  cbind(user_id = friendless_users, 
+        node = NA,
+        degree = as.numeric(1),
+        degree2 = 1) %>% as.data.frame
+azlist$degree %<>% as.integer
+azlist$degree2 %<>% as.integer
+azlist$node %<>% as.integer
+azlist$user_id %<>% as.character
+actAZnetdeg$user_id %<>% as.character
+
+full <- rbind(actAZnetdeg,azlist)
+full$user_id %<>% as.factor
+
+full$degree[full$degree <= 1] <- 1.1
+full$degree2[full$degree2 <= 1] <- 1.1
+
+user <- read_csv("yelp_academic_dataset_user.csv")
+subuser <- user[user$user_id %in% userlist,]
+rm(user)
+subuser %<>% select(user_id,review_count)
+full %<>% left_join(subuser)
+full$user_id %<>% as.factor
+
+tstSEs <- matrix(0,nrow=nrow(test),ncol=140) # 7 weights x 20 values of k
+
+for(i in 1:50){#nrow(test)){
+  ### find all users who rated that business, 
+  biz <- test[i,2] %>% as.character
+  user <- test[i,1] %>% as.character
+  stars <- train[train$business_id==biz,3] %>% unlist
+
+  print(paste(i,length(stars)))
+  ### find nearest k to test point (USING TRAIN DATA)
+  
+  simusers <- train[train$business_id==biz,1] %>% unlist
+  usernums <- match(simusers,userlist)
+  
+  if(length(usernums) == 1){
+    tstprds[i,] <- rep(stars,ncol(tstprds))
+  }
+  else{
+  simusermat <- act.review.mat[usernums,] %>% as.matrix
+  d <- simusermat %>%
+    sweep(2,act.review.mat[match(user,userlist),]) %>%
+    .^2 %>% rowSums
+  
+  userndnums <- match(simusers,full$user_id)
+  dweight1 <- full$degree[userndnums] %>% unlist
+  dweight2 <- full$degree2[userndnums] %>% unlist
+  
+  dweight1L <- full$degree[userndnums] %>% unlist %>% log
+  dweight2L <- full$degree2[userndnums] %>% unlist %>% log
+  
+  rcweight  <- full$review_count[userndnums] %>% unlist
+  rcweightL <- full$review_count[userndnums] %>% unlist %>% log
+  
+  weights <- list(dweight1,dweight2,dweight1L,dweight2L,rcweight,rcweightL)
+  ### take avg of points, then round
+  orderd <- stars[order(d)]
+  r <- c()
+  
+  for(j in seq(3,41,2)){
+    r %<>% c(orderd %>% head(j) %>% mean %>% round)
+  }
+  
+  for(w in weights){
+    q <- c()
+    for(j in seq(3,41,2)){
+      q %<>% c(orderd %>% head(j) %>% weighted.mean(head(w,j)) %>% round)
+    }
+    r %<>% c(q)
+  }
+  tstprds[i,] <- r
+}}
+
 knn <- function(k){
   ## COMPUTE DISTANCES ##
   #for each business: compute distances between each user pair if not already computed

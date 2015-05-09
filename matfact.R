@@ -4,6 +4,7 @@ library(Matrix)
 library(magrittr)
 library(readr)
 library(recommenderlab)
+library(MASS)
 setwd("C:/Users/Jeff.Bernard/Data/Yelp/yelp_dataset_challenge_academic_dataset/")
 
 reviews <- read_csv("no_text_reviews.csv")
@@ -56,8 +57,8 @@ for(i in 1:length(feasible)){
   st <- feasible[i]
   reclist[i] <- getLocalRec(st,"POPULAR",restaurants,restreviews)
 }
-library(MASS)
-MatrixFactorize <- function(train, test, sigsq=0.25, lambda=10, d=20, iterations=100){
+
+sigsq=0.25, lambda=10, d=20, iterations=100){
   
   # define our prior belief
   prior <- lambda * sigsq * diag(1, nrow=d, ncol=d) 
