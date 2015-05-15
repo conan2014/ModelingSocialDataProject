@@ -1,7 +1,8 @@
 # Edgelist transformation
 
 # Subset the data to obtain edgelist
-users <- read.csv("yelp_academic_dataset_user.csv")
+library(readr)
+users <- read_csv("yelp_academic_dataset_user.csv")
 social_1 <- users[,c("user_id","friends")]
 # Remove special characters
 find <- c("\\[|\\]", "u'", "'")
